@@ -1,0 +1,22 @@
+{
+  "DINE-Private-DNS-Azure-Storage-Blob": {
+    "parameters": {
+      "privateDnsZoneId": {
+        "value": "[[if(equals(parameters('dnsZoneSubscriptionId'), ''), parameters('azureStorageBlobPrivateDnsZoneId'), format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}', parameters('dnsZoneSubscriptionId'), toLower(parameters('dnsZoneResourceGroupName')), parameters('dnsZoneResourceType'), replace(replace(parameters('dnsZoneNames').azureStorageBlobPrivateDnsZoneId, '{regionName}', parameters('dnsZoneRegion')), '{regionCode}', parameters('dnzZoneRegionShortNames')[parameters('dnsZoneRegion')])))]"
+      },
+      "effect": {
+        "value": "[[parameters('effect')]"
+      }
+    }
+  },
+  "DINE-Private-DNS-Azure-Storage-Blob-Sec": {
+    "parameters": {
+      "privateDnsZoneId": {
+        "value": "[[if(equals(parameters('dnsZoneSubscriptionId'), ''), parameters('azureStorageBlobSecPrivateDnsZoneId'), format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}', parameters('dnsZoneSubscriptionId'), toLower(parameters('dnsZoneResourceGroupName')), parameters('dnsZoneResourceType'), replace(replace(parameters('dnsZoneNames').azureStorageBlobSecPrivateDnsZoneId, '{regionName}', parameters('dnsZoneRegion')), '{regionCode}', parameters('dnzZoneRegionShortNames')[parameters('dnsZoneRegion')])))]"
+      },
+      "effect": {
+        "value": "[[parameters('effect')]"
+      }
+    }
+  }
+}

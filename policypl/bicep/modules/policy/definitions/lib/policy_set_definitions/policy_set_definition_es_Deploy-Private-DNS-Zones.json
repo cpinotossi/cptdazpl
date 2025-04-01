@@ -1,0 +1,192 @@
+{
+  "name": "Deploy-Private-DNS-Zones",
+  "type": "Microsoft.Authorization/policySetDefinitions",
+  "apiVersion": "2021-06-01",
+  "scope": null,
+  "properties": {
+    "policyType": "Custom",
+    "displayName": "Configure Azure PaaS services to use private DNS zones",
+    "description": "This policy initiative is a group of policies that ensures private endpoints to Azure PaaS services are integrated with Azure Private DNS zones",
+    "metadata": {
+      "version": "2.4.0",
+      "category": "Network",
+      "source": "https://github.com/Azure/Enterprise-Scale/",
+      "alzCloudEnvironments": [
+        "AzureCloud"
+      ]
+    },
+    "parameters": {
+      "dnsZoneSubscriptionId": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+          "displayName": "Subscription Id",
+          "description": "The subscription id where the private DNS zones are deployed. If this is specified, it will override any individual private DNS zone resource ids specified."
+        }
+      },
+      "dnsZoneResourceGroupName": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+          "displayName": "Resource Group Name",
+          "description": "The resource group where the private DNS zones are deployed. If this is specified, it will override any individual private DNS zone resource ids specified."
+        }
+      },
+      "dnsZoneResourceType": {
+        "type": "string",
+        "defaultValue": "Microsoft.Network/privateDnsZones",
+        "metadata": {
+          "displayName": "Resource Type",
+          "description": "The resource type where the private DNS zones are deployed. If this is specified, it will override any individual private DNS zone resource ids specified."
+        }
+      },
+      "dnsZoneRegion": {
+        "type": "string",
+        "defaultValue": "changeme",
+        "metadata": {
+          "displayName": "Region",
+          "description": "The region where the private DNS zones are deployed. If this is specified, it will override any individual private DNS zone resource ids specified."
+        }
+      },
+      "dnzZoneRegionShortNames": {
+        "type": "object",
+        "defaultValue": {
+          "changeme": "changeme",
+          "australiacentral": "acl",
+          "australiacentral2": "acl2",
+          "australiaeast": "ae",
+          "australiasoutheast": "ase",
+          "brazilsoutheast": "bse",
+          "brazilsouth": "brs",
+          "canadacentral": "cnc",
+          "canadaeast": "cne",
+          "centralindia": "inc",
+          "centralus": "cus",
+          "centraluseuap": "ccy",
+          "chilecentral": "clc",
+          "eastasia": "ea",
+          "eastus": "eus",
+          "eastus2": "eus2",
+          "eastus2euap": "ecy",
+          "francecentral": "frc",
+          "francesouth": "frs",
+          "germanynorth": "gn",
+          "germanywestcentral": "gwc",
+          "israelcentral": "ilc",
+          "italynorth": "itn",
+          "japaneast": "jpe",
+          "japanwest": "jpw",
+          "koreacentral": "krc",
+          "koreasouth": "krs",
+          "malaysiasouth": "mys",
+          "malaysiawest": "myw",
+          "mexicocentral": "mxc",
+          "newzealandnorth": "nzn",
+          "northcentralus": "ncus",
+          "northeurope": "ne",
+          "norwayeast": "nwe",
+          "norwaywest": "nww",
+          "polandcentral": "plc",
+          "qatarcentral": "qac",
+          "southafricanorth": "san",
+          "southafricawest": "saw",
+          "southcentralus": "scus",
+          "southeastasia": "sea",
+          "southindia": "ins",
+          "spaincentral": "spc",
+          "swedencentral": "sdc",
+          "swedensouth": "sds",
+          "switzerlandnorth": "szn",
+          "switzerlandwest": "szw",
+          "taiwannorth": "twn",
+          "uaecentral": "uac",
+          "uaenorth": "uan",
+          "uksouth": "uks",
+          "ukwest": "ukw",
+          "westcentralus": "wcus",
+          "westeurope": "we",
+          "westindia": "inw",
+          "westus": "wus",
+          "westus2": "wus2",
+          "westus3": "wus3"
+        },
+        "metadata": {
+          "displayName": "Region Short Name Mapping",
+          "description": "Mapping of region to private DNS zone resource id. If the region is not specified, the default private DNS zone resource id will be used."
+        }
+      },
+      "dnsZoneNames": {
+        "type": "object",
+        "defaultValue": {
+          "azureStorageBlobPrivateDnsZoneId": "privatelink.blob.core.windows.net",
+          "azureStorageBlobSecPrivateDnsZoneId": "privatelink.blob.core.windows.net"
+        },
+        "metadata": {
+          "displayName": "DNS Zone Names",
+          "description": "The list of private DNS zone names to be used for the Azure PaaS services."
+        }
+      },
+      "azureStorageBlobPrivateDnsZoneId": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+          "displayName": "azureStorageBlobPrivateDnsZoneId",
+          "strongType": "Microsoft.Network/privateDnsZones",
+          "description": "Private DNS Zone Identifier"
+        }
+      },
+      "azureStorageBlobSecPrivateDnsZoneId": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+          "displayName": "azureStorageBlobSecPrivateDnsZoneId",
+          "strongType": "Microsoft.Network/privateDnsZones",
+          "description": "Private DNS Zone Identifier"
+        }
+      },
+      "effect": {
+        "type": "string",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      }
+    },
+    "policyDefinitions": [
+      {
+        "policyDefinitionReferenceId": "DINE-Private-DNS-Azure-Storage-Blob",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/75973700-529f-4de2-b794-fb9b6781b6b0",
+        "parameters": {
+          "privateDnsZoneId": {
+            "value": "[[if(equals(parameters('dnsZoneSubscriptionId'), ''), parameters('azureStorageBlobPrivateDnsZoneId'), format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}', parameters('dnsZoneSubscriptionId'), toLower(parameters('dnsZoneResourceGroupName')), parameters('dnsZoneResourceType'), replace(replace(parameters('dnsZoneNames').azureStorageBlobPrivateDnsZoneId, '{regionName}', parameters('dnsZoneRegion')), '{regionCode}', parameters('dnzZoneRegionShortNames')[parameters('dnsZoneRegion')])))]"
+          },
+          "effect": {
+            "value": "[[parameters('effect')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": "1.*.*"
+      },
+      {
+        "policyDefinitionReferenceId": "DINE-Private-DNS-Azure-Storage-Blob-Sec",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d847d34b-9337-4e2d-99a5-767e5ac9c582",
+        "parameters": {
+          "privateDnsZoneId": {
+            "value": "[[if(equals(parameters('dnsZoneSubscriptionId'), ''), parameters('azureStorageBlobSecPrivateDnsZoneId'), format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}', parameters('dnsZoneSubscriptionId'), toLower(parameters('dnsZoneResourceGroupName')), parameters('dnsZoneResourceType'), replace(replace(parameters('dnsZoneNames').azureStorageBlobSecPrivateDnsZoneId, '{regionName}', parameters('dnsZoneRegion')), '{regionCode}', parameters('dnzZoneRegionShortNames')[parameters('dnsZoneRegion')])))]"
+          },
+          "effect": {
+            "value": "[[parameters('effect')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": "1.*.*"
+      }
+    ],
+    "policyDefinitionGroups": null
+  }
+}

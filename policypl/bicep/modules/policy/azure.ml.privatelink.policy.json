@@ -1,0 +1,126 @@
+"parameters": {
+  "privateDnsZoneIdAmlworkspaceApi": {
+    "type": "String",
+    "metadata": {
+      "displayName": "privateDnsZoneIdAmlworkspaceApi",
+      "description": null,
+      "strongType": "Microsoft.Network/privateDnsZones"
+    }
+  },
+  "privateDnsZoneIdAmlworkspaceNotebooks": {
+    "type": "String",
+    "metadata": {
+      "displayName": "privateDnsZoneIdAmlworkspaceNotebooks",
+      "description": null,
+      "strongType": "Microsoft.Network/privateDnsZones"
+    }
+  }
+},
+"policyRule": {
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.Network/privateEndpoints"
+      },
+      {
+        "count": {
+          "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+          "where": {
+            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+            "equals": "amlworkspace"
+          }
+        },
+        "greaterOrEquals": 1
+      }
+    ]
+  },
+  "then": {
+    "effect": "deployIfNotExists",
+    "details": {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "roleDefinitionIds": [
+        "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+      ],
+      "existenceCondition": {
+        "count": {
+          "field": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups/privateDnsZoneConfigs[*]",
+          "where": {
+            "anyOf": [
+              {
+                "field": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups/privateDnsZoneConfigs[*].privateDnsZoneId",
+                "equals": "[parameters('privateDnsZoneIdAmlworkspaceApi')]"
+              },
+              {
+                "field": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups/privateDnsZoneConfigs[*].privateDnsZoneId",
+                "equals": "[parameters('privateDnsZoneIdAmlworkspaceNotebooks')]"
+              }
+            ]
+          }
+        },
+        "equals": 2
+      },
+      "deployment": {
+        "properties": {
+          "mode": "incremental",
+          "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+              "privateDnsZoneIdAmlworkspaceApi": {
+                "type": "string"
+              },
+              "privateDnsZoneIdAmlworkspaceNotebooks": {
+                "type": "string"
+              },
+              "privateEndpointName": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              }
+            },
+            "resources": [
+              {
+                "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                "apiVersion": "2020-07-01",
+                "location": "[parameters('location')]",
+                "properties": {
+                  "privateDnsZoneConfigs": [
+                    {
+                      "name": "privatelink-api-azureml-ms",
+                      "properties": {
+                        "privateDnsZoneId": "[parameters('privateDnsZoneIdAmlworkspaceApi')]"
+                      }
+                    },
+                    {
+                      "name": "privatelink-notebooks-azure-net",
+                      "properties": {
+                        "privateDnsZoneId": "[parameters('privateDnsZoneIdAmlworkspaceNotebooks')]"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "parameters": {
+            "privateDnsZoneIdAmlworkspaceApi": {
+              "value": "[parameters('privateDnsZoneIdAmlworkspaceApi')]"
+            },
+            "privateDnsZoneIdAmlworkspaceNotebooks": {
+              "value": "[parameters('privateDnsZoneIdAmlworkspaceNotebooks')]"
+            },
+            "privateEndpointName": {
+              "value": "[field('name')]"
+            },
+            "location": {
+              "value": "[field('location')]"
+            }
+          }
+        }
+      }
+    }
+  }
+}
