@@ -1,5 +1,7 @@
 # Azure Private Endpoint and Azure Policy
 
+Demo of how to create private endpoints DNS records using Azure Policy.
+
 ~~~powershell
 az login --use-device-code
 az account set --subscription "build"
@@ -27,7 +29,6 @@ Name          IP
 ------------  --------
 cptdazplblob  10.1.0.5
 
-~~~powershell
 # Get active logs related to policy activities under the resource group
 $privateDnsId=az network private-dns zone show -g $prefix -n $privateDnsZoneName --query id -o tsv
 az monitor activity-log list --resource-id $privateDnsId -g $prefix --start-time "2025-04-01T23:59:00" --offset 1h --query "[?contains(operationName.value, 'Microsoft.Authorization/policies/deployIfNotExists/action')].{eventTimestamp:eventTimestamp,authorization:authorization,category:category,operationName:operationName,properties:properties}"
