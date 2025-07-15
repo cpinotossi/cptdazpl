@@ -4,7 +4,7 @@ param prefix string = 'cptd'
 param location string = 'eastus'
 
 
-resource law 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
+resource law 'Microsoft.OperationalInsights/workspaces@2025-02-01' = {
   name: prefix
   location: location
 }

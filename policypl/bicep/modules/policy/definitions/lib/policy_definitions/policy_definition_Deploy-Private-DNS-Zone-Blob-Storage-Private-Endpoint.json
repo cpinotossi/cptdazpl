@@ -79,7 +79,7 @@
                     "properties": {
                       "privateDnsZoneConfigs": [
                         {
-                          "name": "cosmosDB-privateDnsZone",
+                          "name": "storage-privateDnsZone",
                           "properties": {
                             "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
                           }

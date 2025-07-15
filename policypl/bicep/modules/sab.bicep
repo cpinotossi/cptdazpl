@@ -4,6 +4,7 @@ param prefix string
 param location string
 param subnetId string
 param objectIds array
+param workspaceId string
 
 resource sa 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: prefix
@@ -66,5 +67,50 @@ resource pe 'Microsoft.Network/privateEndpoints@2023-09-01' = {
       }
     ]
     customNetworkInterfaceName: prefix
+  }
+}
+
+resource blobDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${prefix}-blobdiag'
+  scope: sab
+  properties: {
+    logs: [
+      {
+        category: 'StorageRead'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+      {
+        category: 'StorageWrite'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+      {
+        category: 'StorageDelete'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+    ]
+    // Replace with your Log Analytics workspace resource ID
+    workspaceId: workspaceId
   }
 }
